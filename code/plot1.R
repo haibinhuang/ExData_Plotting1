@@ -1,22 +1,9 @@
-## Since the following file write code to "append" to file, start fresh
-if (file.exists("out.txt")) {
-        file.remove("out.txt") 
-}
-## Read in those lines with dates 2007-2-1 and 2007-2-2
-file_in <- file("household_power_consumption.txt","r")
-file_out <- file("out.txt","a")
-x <- readLines(file_in, n=1)
-writeLines(x, file_out) # copy headers
-while(length(x)) {
-        ind <- grep("^[1-2]/2/2007", x)
-        if (length(ind)) writeLines(x[ind], file_out)
-        x <- readLines(file_in, n=1440)
-}
-close(file_in)
-close(file_out)
-
-## Read into data frame
-df <- read.csv2("out.txt", na.strings="?")
+## Read in all data
+allData <- read.csv2("household_power_consumption.txt", na.strings="?")
+## subsetting the two day data
+TwoDayData <- subset(allData, Date == "1/2/2007" | Date == "2/2/2007")
+## complete cases
+df <- TwoDayData[complete.cases(TwoDayData), ]
 
 ## Change the data from factor to numeric
 df$Global_active_power <- as.numeric(as.character(df$Global_active_power))
